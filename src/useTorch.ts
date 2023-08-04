@@ -29,13 +29,10 @@ export const useTorch = ({ resetStream }: UseTorchOptions) => {
 
   const off = useCallback(async () => {
     if (!videoTrackRef.current || !isAvailable) return;
-    // applyConstraints with torch: false does not work to turn the flashlight off, as a stream's torch stays
-    // continuously on, see https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints#torch. Therefore,
-    // we have to stop the stream to turn the flashlight off.
-    videoTrackRef.current = null;
-    setIsAvailable(null);
+    await videoTrackRef.current.applyConstraints({
+      advanced: [{ torch: false } as any],
+    });
     setIsOn(false);
-    await resetStreamRef.current();
   }, [isAvailable]);
 
   useEffect(() => {
